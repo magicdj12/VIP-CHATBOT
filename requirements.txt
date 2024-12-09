@@ -11,6 +11,7 @@ lexica-api
 deep-translator
 pycgi
 apscheduler
+aiohttp
 Flask
 uvloop
 psutil
