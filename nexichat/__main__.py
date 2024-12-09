@@ -23,18 +23,15 @@ async def anony_boot():
     try:
         await nexichat.set_bot_commands(
             commands=[
-                BotCommand("start", "Start the bot"),
-                BotCommand("help", "Get the help menu"),
-                BotCommand("ping", "Check if the bot is alive or dead"),
-                BotCommand("lang", "Select bot reply language"),
-                BotCommand("resetlang", "Reset to default bot reply lang"),
-                BotCommand("id", "Get users user_id"),
-                BotCommand("stats", "Check bot stats"),
-                BotCommand("gcast", "Broadcast any message to groups/users"),
-                BotCommand("chatbot", "Enable or disable chatbot"),
-                BotCommand("shayri", "Get random shayri for love"),
-                BotCommand("repo", "Get chatbot source code"),
-                BotCommand("ask", "Ask anything question by ai"),
+                BotCommand("start", "استارت"),
+                BotCommand("help", "راهنما"),
+                BotCommand("lang", "انتخاب زبان"),
+                BotCommand("resetlang", "ریستارت زبان"),
+                BotCommand("id", "مشخصات ایدی"),
+                BotCommand("gcast", "پیام به گروه ها و کانال ها"),
+                BotCommand("chatbot", "فعال و غیر فعال"),
+                BotCommand("shayri", "متن زیبا"),
+                BotCommand("ask", "سوال از هوش مصنوعی"),
             ]
         )
         LOGGER.info("Bot commands set successfully.")
