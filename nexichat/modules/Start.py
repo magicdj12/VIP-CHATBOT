@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import random
+from pyrogram.enums import ParseMode
 from nexichat import nexichat
 from datetime import datetime
 from pymongo import MongoClient
@@ -71,7 +72,7 @@ async def set_default_status(chat_id):
         if not await status_db.find_one({"chat_id": chat_id}):
             await status_db.insert_one({"chat_id": chat_id, "status": "enabled"})
     except Exception as e:
-        print(f"Error setting default status for chat {chat_id}: {e}")
+        print(f"خطا در تنظیم وضعیت پیش‌فرض برای چت {chat_id}: {e}")
 
 @nexichat.on_message(filters.new_chat_members)
 async def welcomejej(client, message: Message):
@@ -81,16 +82,15 @@ async def welcomejej(client, message: Message):
     chats = len(await get_served_chats())
     try:
         for member in message.new_chat_members:
-            
             if member.id == nexichat.id:
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(f"sᴇʟᴇᴄᴛ ʟᴀɴɢᴜᴀɢᴇ", callback_data="choose_lang")]])    
-                await message.reply_photo(photo=random.choice(IMG), caption=START.format(nexichat.mention or "can't mention", users, chats), reply_markup=reply_markup)
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(f"انتخاب زبان", callback_data="choose_lang")]])    
+                await message.reply_photo(photo=random.choice(IMG), caption=START.format(nexichat.mention or "غیرقابل منشن", users, chats), reply_markup=reply_markup)
                 chat = message.chat   
                 try:
                     invitelink = await nexichat.export_chat_invite_link(message.chat.id)
-                    link = f"[ɢᴇᴛ ʟɪɴᴋ]({invitelink})"
+                    link = f"[دریافت لینک]({invitelink})"
                 except ChatAdminRequired:
-                    link = "No Link"
+                    link = "بدون لینک"
                     
                 try:
                     groups_photo = await nexichat.download_media(
@@ -104,16 +104,16 @@ async def welcomejej(client, message: Message):
                 
                 count = await nexichat.get_chat_members_count(chat.id)
                 chats = len(await get_served_chats())
-                username = chat.username if chat.username else "𝐏ʀɪᴠᴀᴛᴇ 𝐆ʀᴏᴜᴘ"
+                username = chat.username if chat.username else "گروه خصوصی"
                 msg = (
-                    f"**📝𝐌ᴜsɪᴄ 𝐁ᴏᴛ 𝐀ᴅᴅᴇᴅ 𝐈ɴ 𝐀 #𝐍ᴇᴡ_𝐆ʀᴏᴜᴘ**\n\n"
-                    f"**📌𝐂ʜᴀᴛ 𝐍ᴀᴍᴇ:** {chat.title}\n"
-                    f"**🍂𝐂ʜᴀᴛ 𝐈ᴅ:** `{chat.id}`\n"
-                    f"**🔐𝐂ʜᴀᴛ 𝐔sᴇʀɴᴀᴍᴇ:** @{username}\n"
-                    f"**🖇️𝐆ʀᴏᴜᴘ 𝐋ɪɴᴋ:** {link}\n"
-                    f"**📈𝐆ʀᴏᴜᴘ 𝐌ᴇᴍʙᴇʀs:** {count}\n"
-                    f"**🤔𝐀ᴅᴅᴇᴅ 𝐁ʏ:** {message.from_user.mention}\n\n"
-                    f"**ᴛᴏᴛᴀʟ ᴄʜᴀᴛs :** {chats}"
+                    f"**📝 ربات به یک #گروه_جدید اضافه شد**\n\n"
+                    f"**📌نام گروه:** {chat.title}\n"
+                    f"**🍂شناسه گروه:** `{chat.id}`\n"
+                    f"**🔐نام کاربری گروه:** @{username}\n"
+                    f"**🖇️لینک گروه:** {link}\n"
+                    f"**📈تعداد اعضا:** {count}\n"
+                    f"**🤔اضافه شده توسط:** {message.from_user.mention}\n\n"
+                    f"**تعداد کل گروه‌ها:** {chats}"
                 )
 
                 try:
@@ -168,30 +168,19 @@ async def start(_, m: Message):
         )
         await asyncio.sleep(0.5)
         
-        await accha.edit("**__ᴅ__**")
-        await accha.edit("**__ᴅι__**")
-        await accha.edit("**__ᴅιи__**")
-        await accha.edit("**__ᴅιиg__**")
-        await accha.edit("**__ᴅιиg ᴅ__**")
-        await accha.edit("**__ᴅιиg ᴅσ__**")
-        await accha.edit("**__ᴅιиg ᴅσи__**")
-        await accha.edit("**__ᴅιиg ᴅσиg__**")
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ︎__**")
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ︎ ѕ__**")
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ sт__**")
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ︎ ѕтα__**")
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ︎ ѕтαя__**")
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ sтαят__**")
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ︎ sтαятι__**")
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ︎ sтαятιи__**")
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ sтαятιиg__**")
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ︎ ѕтαятιиg.__**")
-        await asyncio.sleep(0.1)
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ sтαятιиg.....__**")
-        await asyncio.sleep(0.1)
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ︎ ѕтαятιиg.__**")
-        await asyncio.sleep(0.1)
-        await accha.edit("**__ᴅιиg ᴅσиg ꨄ sтαятιиg.....__**")
+        # Animation text in Persian
+        animations = [
+            "**__در__**", "**__درح__**", "**__درحا__**", "**__درحال__**",
+            "**__درحال ر__**", "**__درحال را__**", "**__درحال راه__**",
+            "**__درحال راه ا__**", "**__درحال راه ان__**", "**__درحال راه اند__**",
+            "**__درحال راه اندا__**", "**__درحال راه انداز__**", "**__درحال راه اندازی__**",
+            "**__درحال راه اندازی...__**"
+        ]
+        
+        for animation in animations:
+            await accha.edit(animation)
+            await asyncio.sleep(0.1)
+        
         await accha.delete()
         
         umm = await m.reply_sticker(sticker=random.choice(STICKER))
@@ -229,11 +218,10 @@ async def help(client: nexichat, m: Message):
             caption=HELP_READ,
             reply_markup=InlineKeyboardMarkup(HELP_BTN),
         )
-
     else:
         await m.reply_photo(
             photo=random.choice(IMG),
-            caption="**ʜᴇʏ, ᴘᴍ ᴍᴇ ғᴏʀ ʜᴇʟᴘ ᴄᴏᴍᴍᴀɴᴅs!**",
+            caption="**برای دریافت راهنما به من پیام خصوصی بدهید!**",
             reply_markup=InlineKeyboardMarkup(HELP_BUTN),
         )
         await add_served_chat(m.chat.id)
@@ -247,20 +235,17 @@ async def repo(_, m: Message):
         disable_web_page_preview=True,
     )
 
-
-
-
 @nexichat.on_cmd("ping")
 async def ping(_, message: Message):
     start = datetime.now()
     loda = await message.reply_photo(
         photo=random.choice(IMG),
-        caption="ᴘɪɴɢɪɴɢ...",
+        caption="در حال بررسی...",
     )
 
     ms = (datetime.now() - start).microseconds / 1000
     await loda.edit_text(
-        text=f"нey вαву!!\n{nexichat.name} ᴄʜᴀᴛʙᴏᴛ ιѕ alιve 🥀 αnd worĸιng ғιne wιтн a pιng oғ\n➥ `{ms}` ms\n\n<b>|| мαdє ωιтн ❣️ ву [ᴠɪᴘ ʙᴏʏ](https://t.me/{OWNER_USERNAME}) ||</b>",
+        text=f"سلام عزیزم!!\n{nexichat.name} فعال است 🥀 و با پینگ\n➥ `{ms}` میلی‌ثانیه کار می‌کند\n\n<b>|| ساخته شده با ❣️ توسط [سازنده](https://t.me/{OWNER_USERNAME}) ||</b>",
         reply_markup=InlineKeyboardMarkup(PNG_BTN),
     )
     if message.chat.type == ChatType.PRIVATE:
@@ -268,22 +253,18 @@ async def ping(_, message: Message):
     else:
         await add_served_chat(message.chat.id)
 
-
 @nexichat.on_message(filters.command("stats"))
 async def stats(cli: Client, message: Message):
     users = len(await get_served_users())
     chats = len(await get_served_chats())
     await message.reply_text(
-        f"""{(await cli.get_me()).mention} ᴄʜᴀᴛʙᴏᴛ sᴛᴀᴛs:
+        f"""{(await cli.get_me()).mention} آمار ربات:
 
-➻ **ᴄʜᴀᴛs :** {chats}
-➻ **ᴜsᴇʀs :** {users}"""
+➻ **گروه‌ها:** {chats}
+➻ **کاربران:** {users}"""
     )
 
 
-from pyrogram.enums import ParseMode
-
-from nexichat import nexichat
 
 
 @nexichat.on_cmd("id")
@@ -293,11 +274,8 @@ async def getid(client, message):
     message_id = message.id
     reply = message.reply_to_message
 
-    text = f"**[ᴍᴇssᴀɢᴇ ɪᴅ:]({message.link})** `{message_id}`\n"
-    text += f"**[ʏᴏᴜʀ ɪᴅ:](tg://user?id={your_id})** `{your_id}`\n"
-
-    if not message.command:
-        message.command = message.text.split()
+    text = f"**[شناسه پیام:]({message.link})** `{message_id}`\n"
+    text += f"**[شناسه شما:](tg://user?id={your_id})** `{your_id}`\n"
 
     if not message.command:
         message.command = message.text.split()
@@ -306,42 +284,15 @@ async def getid(client, message):
         try:
             split = message.text.split(None, 1)[1].strip()
             user_id = (await client.get_users(split)).id
-            text += f"**[ᴜsᴇʀ ɪᴅ:](tg://user?id={user_id})** `{user_id}`\n"
+            text += f"**[شناسه کاربر:](tg://user?id={user_id})** `{user_id}`\n"
 
         except Exception:
-            return await message.reply_text("ᴛʜɪs ᴜsᴇʀ ᴅᴏᴇsɴ'ᴛ ᴇxɪsᴛ.", quote=True)
+            return await message.reply_text("این کاربر وجود ندارد.", quote=True)
 
-    text += f"**[ᴄʜᴀᴛ ɪᴅ:](https://t.me/{chat.username})** `{chat.id}`\n\n"
-
-    if (
-        not getattr(reply, "empty", True)
-        and not message.forward_from_chat
-        and not reply.sender_chat
-    ):
-        text += f"**[ʀᴇᴘʟɪᴇᴅ ᴍᴇssᴀɢᴇ ɪᴅ:]({reply.link})** `{reply.id}`\n"
-        text += f"**[ʀᴇᴘʟɪᴇᴅ ᴜsᴇʀ ɪᴅ:](tg://user?id={reply.from_user.id})** `{reply.from_user.id}`\n\n"
-
-    if reply and reply.forward_from_chat:
-        text += f"ᴛʜᴇ ғᴏʀᴡᴀʀᴅᴇᴅ ᴄʜᴀɴɴᴇʟ, {reply.forward_from_chat.title}, ʜᴀs ᴀɴ ɪᴅ ᴏғ `{reply.forward_from_chat.id}`\n\n"
-        print(reply.forward_from_chat)
-
-    if reply and reply.sender_chat:
-        text += f"ɪᴅ ᴏғ ᴛʜᴇ ʀᴇᴘʟɪᴇᴅ ᴄʜᴀᴛ/ᴄʜᴀɴɴᴇʟ, ɪs `{reply.sender_chat.id}`"
-        print(reply.sender_chat)
-
-    await message.reply_text(
-        text,
-        disable_web_page_preview=True,
-        parse_mode=ParseMode.DEFAULT,
-    )
-
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-AUTO_SLEEP = 5
-IS_BROADCASTING = False
-broadcast_lock = asyncio.Lock()
+    text += f"**[شناسه گروه:](https://t.me/{chat.username})** `{chat.id}`\n\n"
+    
+    
+    
 
 
 @nexichat.on_message(
@@ -488,3 +439,5 @@ async def broadcast_message(client, message):
 
         finally:
             IS_BROADCASTING = False
+            
+            
