@@ -1,64 +1,84 @@
-import os
 import requests
+from MukeshAPI import api
 from pyrogram import filters, Client
 from pyrogram.enums import ChatAction
-from nexichat import nexichat
+from nexichat import nexichat as app
 
-# استفاده از متغیرهای محیطی برای API keys
-GEMINI_API = os.getenv("GEMINI_API", "AIzaSyDJR7hR9xqB4f0sPDVJBCbXDORAp7yuCQE")
-RAPID_API = os.getenv("RAPID_API", "2a3a6d89c2msh19b7d65a0cd4dc9p1c7255jsn36aa05d28b63")
+# Define both English and Persian commands
+COMMANDS = ["gemini", "ai", "ask", "chatgpt", "هوش_مصنوعی", "جمینی", "بپرس"]
 
-async def get_ai_response(query):
+@app.on_message(filters.command(COMMANDS) | filters.regex(r'^(جمینی|بپرس|هوش مصنوعی)'))
+async def gemini_handler(client, message):
     try:
-        url = "https://chatgpt-gpt4-ai-chatbot.p.rapidapi.com/ask"
-        headers = {
-            "content-type": "application/json",
-            "X-RapidAPI-Key": RAPID_API,
-            "X-RapidAPI-Host": "chatgpt-gpt4-ai-chatbot.p.rapidapi.com"
-        }
-        payload = {"query": query}
-        response = requests.post(url, json=payload, headers=headers)
-        return response.json().get('response', '')
-    except Exception:
-        # استفاده از API جایگزین اگر RapidAPI کار نکرد
-        backup_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={GEMINI_API}"
-        payload = {
-            "contents": [{"parts":[{"text": query}]}]
-        }
-        response = requests.post(backup_url, json=payload)
-        return response.json().get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
-
-@nexichat.on_message(filters.command(["ask", "ai", "gpt"]))
-async def ai_handler(client, message):
-    try:
-        if len(message.command) < 2 and not message.reply_to_message:
-            return await message.reply_text(
-                "**🤖 راهنمای استفاده:**\n"
-                "**برای پرسیدن سوال:**\n"
-                "`/ask سوال شما`\n\n"
-                "**یا روی پیام مورد نظر ریپلای کنید و**\n"
-                "`/ask` **را بفرستید**"
-            )
-
-        await client.send_chat_action(message.chat.id, ChatAction.TYPING)
+        # Get user input
+        user_input = ""
         
-        if message.reply_to_message:
-            query = message.reply_to_message.text
-        else:
-            query = " ".join(message.command[1:])
-
-        processing_msg = await message.reply_text("**🤖 در حال پردازش...**")
-        
-        response = await get_ai_response(query)
-        
-        if response:
-            await processing_msg.edit_text(
-                f"**💭 سوال:** {query}\n\n"
-                f"**🤖 پاسخ:** {response}\n\n"
-                "**👨‍💻 @Panel_Tornado**"
-            )
-        else:
-            await processing_msg.edit_text("**❌ متأسفانه نتونستم پاسخی پیدا کنم!**")
+        # Handle command with bot username
+        if message.text and message.text.startswith(f"/gemini@{client.me.username}"):
+            if len(message.text.split(" ", 1)) > 1:
+                user_input = message.text.split(" ", 1)[1]
+            else:
+                await message.reply_text("مثال: `بپرس نارندرا مودی کیست؟` یا `/ask who is Narendra Modi`")
+                return
+                
+        # Handle reply to message
+        elif message.reply_to_message and message.reply_to_message.text:
+            user_input = message.reply_to_message.text
             
+        # Handle direct command
+        elif message.text.startswith('/'):
+            if len(message.command) > 1:
+                user_input = " ".join(message.command[1:])
+            else:
+                await message.reply_text("مثال: `بپرس نارندرا مودی کیست؟` یا `/ask who is Narendra Modi`")
+                return
+                
+        # Handle Persian text without slash
+        else:
+            text_parts = message.text.split(maxsplit=1)
+            if len(text_parts) > 1:
+                user_input = text_parts[1]
+            else:
+                await message.reply_text("لطفا سوال خود را بعد از دستور وارد کنید")
+                return
+
+        if not user_input:
+            await message.reply_text("لطفا یک سوال یا متن وارد کنید")
+            return
+
+        # Send typing action
+        await client.send_chat_action(message.chat.id, ChatAction.TYPING)
+
+        # Try Gemini API first
+        try:
+            response = api.gemini(user_input)
+            if response and response.get("results"):
+                await message.reply_text(response["results"], quote=True)
+                return
+        except Exception as e:
+            print(f"Gemini API Error: {str(e)}")
+
+        # If Gemini fails, try the alternative API
+        try:
+            base_url = "https://open.wiki-api.ir/apis-2/ChatGPT4/?chat="
+            response = requests.get(base_url + user_input, timeout=30)
+            response.raise_for_status()  # Raise exception for bad status codes
+            
+            if response.text.strip():
+                await message.reply_text(response.text.strip(), quote=True)
+            else:
+                raise Exception("Empty response")
+                
+        except Exception as e:
+            print(f"Alternative API Error: {str(e)}")
+            await message.reply_text(
+                "**در حال حاضر هر دو سرویس Gemini و Chat با AI در دسترس نیستند**\n\n"
+                "**Both Gemini and Chat with AI are currently unavailable**"
+            )
+
     except Exception as e:
-        await message.reply_text("**⚠️ مشکلی پیش اومد! لطفاً دوباره تلاش کنید.**")
+        print(f"Main Handler Error: {str(e)}")
+        await message.reply_text(
+            "**خطایی رخ داد. لطفا دوباره تلاش کنید**\n\n"
+            "**An error occurred. Please try again.**"
+        )
