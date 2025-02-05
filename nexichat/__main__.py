@@ -9,12 +9,15 @@ from nexichat.modules import ALL_MODULES
 
 @nexichat.on_message(filters.command("panel") & filters.user(int(OWNER_ID)))
 async def show_panel(client, message):
-    panel_text = """**🔰 پنل راهنمای ربات نکسی**
+    panel_text = f"""**🔰 پنل راهنمای {nexichat.name}**
 
 ⚡️ به پنل راهنمای ربات خوش آمدید
 📍 برای استفاده از دستورات، روی دکمه‌های زیر کلیک کنید
 
-🔸 وضعیت فعلی ربات: آنلاین ✅"""
+🤖 نام ربات: {nexichat.mention}
+👤 شناسه ربات: `{nexichat.id}`
+📝 یوزرنیم: @{nexichat.username}
+⚡️ وضعیت: آنلاین ✅"""
 
     buttons = [
         [
@@ -52,6 +55,10 @@ async def show_panel(client, message):
 
 @nexichat.on_callback_query()
 async def panel_callback(client, callback_query):
+    if callback_query.from_user.id != int(OWNER_ID):
+        await callback_query.answer("شما دسترسی به این بخش را ندارید!", show_alert=True)
+        return
+
     if callback_query.data == "cmd_start":
         text = """**🤖 دستور استارت**
 • دستور: /start
@@ -117,10 +124,13 @@ async def panel_callback(client, callback_query):
                 InlineKeyboardButton("❌ بستن", callback_data="close_panel")
             ]
         ]
-        await callback_query.message.edit_text(
-            text,
-            reply_markup=InlineKeyboardMarkup(buttons)
-        )
+        try:
+            await callback_query.message.edit_text(
+                text,
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+        except Exception as e:
+            LOGGER.error(f"خطا در ویرایش پیام: {e}")
 
     elif callback_query.data == "back_to_panel":
         await show_panel(client, callback_query.message)
@@ -167,7 +177,7 @@ async def anony_boot():
         LOGGER.info(f"@{nexichat.username} شروع به کار کرد.")
     except Exception as ex:
         LOGGER.warning(f"نتوانستم به مالک پیام بدهم: {ex}")
-        LOGGER.info(f"@{nexichat.first_name} راه‌اندازی شد. لطفاً ربات را از آیدی مالک استارت کنید.")
+        LOGGER.info(f"@{nexichat.name} راه‌اندازی شد. لطفاً ربات را از آیدی مالک استارت کنید.")
     
     await idle()
 
